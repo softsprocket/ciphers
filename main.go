@@ -83,7 +83,8 @@ func main() {
 		_, privOk := files["private"]
 		_, pubOk := files["public"]
 		if !privOk || !pubOk {
-
+			fmt.Printf("usage: %s gen-keys --private <filename> --public <filename>", filepath.Base(arguments[0]))
+			os.Exit(-1)
 		}
 
 		genKeyPair(files["private"], files["public"])
