@@ -9,7 +9,6 @@ import (
 	"log"
 )
 
-// GenerateKeyPair generates a new key pair
 func GenerateKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey) {
 	privkey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -18,7 +17,6 @@ func GenerateKeyPair(bits int) (*rsa.PrivateKey, *rsa.PublicKey) {
 	return privkey, &privkey.PublicKey
 }
 
-// PrivateKeyToBytes private key to bytes
 func PrivateKeyToBytes(priv *rsa.PrivateKey) []byte {
 	privBytes := pem.EncodeToMemory(
 		&pem.Block{
@@ -30,7 +28,6 @@ func PrivateKeyToBytes(priv *rsa.PrivateKey) []byte {
 	return privBytes
 }
 
-// PublicKeyToBytes public key to bytes
 func PublicKeyToBytes(pub *rsa.PublicKey) []byte {
 	pubASN1, err := x509.MarshalPKIXPublicKey(pub)
 	if err != nil {
@@ -45,7 +42,6 @@ func PublicKeyToBytes(pub *rsa.PublicKey) []byte {
 	return pubBytes
 }
 
-// BytesToPrivateKey bytes to private key
 func BytesToPrivateKey(priv []byte) *rsa.PrivateKey {
 	block, _ := pem.Decode(priv)
 	enc := x509.IsEncryptedPEMBlock(block)
@@ -65,7 +61,6 @@ func BytesToPrivateKey(priv []byte) *rsa.PrivateKey {
 	return key
 }
 
-// BytesToPublicKey bytes to public key
 func BytesToPublicKey(pub []byte) *rsa.PublicKey {
 	block, _ := pem.Decode(pub)
 	enc := x509.IsEncryptedPEMBlock(block)
@@ -89,7 +84,6 @@ func BytesToPublicKey(pub []byte) *rsa.PublicKey {
 	return key
 }
 
-// EncryptWithPublicKey encrypts data with public key
 func EncryptWithPublicKey(msg []byte, pub *rsa.PublicKey) []byte {
 	hash := sha512.New()
 	ciphertext, err := rsa.EncryptOAEP(hash, rand.Reader, pub, msg, nil)
@@ -99,7 +93,6 @@ func EncryptWithPublicKey(msg []byte, pub *rsa.PublicKey) []byte {
 	return ciphertext
 }
 
-// DecryptWithPrivateKey decrypts data with private key
 func DecryptWithPrivateKey(ciphertext []byte, priv *rsa.PrivateKey) []byte {
 	hash := sha512.New()
 	plaintext, err := rsa.DecryptOAEP(hash, rand.Reader, priv, ciphertext, nil)
