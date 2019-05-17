@@ -39,14 +39,24 @@ func decryptToString(buf []byte, privKey []byte) string {
 	return string(debuf)
 }
 
+var usageStrings = map[string]string{
+	"app":            "usage: %s <command> <args>",
+	"help":           "usage: %s help <command>\ncommands: gen-keys encrypt-string decrypt-string",
+	"gen-keys":       "usage: %s gen-keys --private <filename> --public <filename>",
+	"encrypt-string": "usage: %s encrypt-string <string>",
+	"decrypt-string": "usage: %s decrypt-string <string>",
+}
+
+func printUsageAndExit(command string, exitValue int) {
+	fmt.Printf(usageStrings[command], filepath.Base(os.Args[0]))
+	os.Exit(exitValue)
+}
+
 func main() {
-	fmt.Println("Hello, Ciphers")
 	arguments := os.Args
 
 	if len(arguments) < 2 {
-		fmt.Printf("usage: %s <command>", filepath.Base(arguments[0]))
-		fmt.Println("commands: gen-keys help")
-		os.Exit(-1)
+		printUsageAndExit("app", -1)
 	}
 
 	command := arguments[1]
@@ -54,21 +64,14 @@ func main() {
 	switch command {
 	case "help":
 		if len(arguments) < 3 {
-			fmt.Printf("usage: %s help <command>", filepath.Base(arguments[0]))
-			fmt.Println("commands: gen-keys")
-			os.Exit(-1)
+			printUsageAndExit("help", -1)
 		}
 
-		switch arguments[2] {
-		case "gen-keys":
-			fmt.Printf("usage: %s gen-keys --private <filename> --public <filename>", filepath.Base(arguments[0]))
-		}
+		printUsageAndExit(arguments[2], 0)
 
-		os.Exit(0)
 	case "gen-keys":
 		if len(arguments) < 6 {
-			fmt.Printf("usage: %s gen-keys --private <filename> --public <filename>", filepath.Base(arguments[0]))
-			os.Exit(-1)
+			printUsageAndExit("gen-keys", -1)
 		}
 
 		files := make(map[string]string)
@@ -83,11 +86,18 @@ func main() {
 		_, privOk := files["private"]
 		_, pubOk := files["public"]
 		if !privOk || !pubOk {
-			fmt.Printf("usage: %s gen-keys --private <filename> --public <filename>", filepath.Base(arguments[0]))
-			os.Exit(-1)
+			printUsageAndExit("gen-keys", -1)
 		}
 
 		genKeyPair(files["private"], files["public"])
 
+	case "encrypt-string":
+		if len(arguments) < 3 {
+			printUsageAndExit("encrypt-string", -1)
+		}
+	case "decrypt-string":
+		if len(arguments) < 3 {
+			printUsageAndExit("encrypt-string", -1)
+		}
 	}
 }
